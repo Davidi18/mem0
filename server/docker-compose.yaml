@@ -11,6 +11,12 @@ services:
       - .env
     networks:
       - mem0_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mem0.rule=Host(`mem0.strudel.marketing`)"
+      - "traefik.http.routers.mem0.entrypoints=websecure"
+      - "traefik.http.routers.mem0.tls.certresolver=letsencrypt"
+      - "traefik.http.services.mem0.loadbalancer.server.port=8000"
     volumes:
       - ./history:/app/history      # History db location. By default, it creates a history.db file on the server folder
       - .:/app                      # Server code. This allows to reload the app when the server code is updated
