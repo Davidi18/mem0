@@ -2,13 +2,15 @@ version: '3.8'
 
 services:
   mem0:
-    image: mem0/mem0-api-server:latest
+    build:
+      context: ..  
+      dockerfile: server/dev.Dockerfile  
     environment:
       - OPENAI_API_KEY
     ports:
-      - "8888:8888"
+      - "8888:8000"
     volumes:
-      - ./history:/app/history
+      - ../history:/app/history
     networks:
       - mem0_network
     labels:
@@ -16,7 +18,7 @@ services:
       - "traefik.http.routers.mem0.rule=Host(`mem0.strudel.marketing`)"
       - "traefik.http.routers.mem0.entrypoints=websecure"
       - "traefik.http.routers.mem0.tls.certresolver=letsencrypt"
-      - "traefik.http.services.mem0.loadbalancer.server.port=8888"
+      - "traefik.http.services.mem0.loadbalancer.server.port=8000"
 
   postgres:
     image: ankane/pgvector:v0.5.1
@@ -60,8 +62,8 @@ services:
       - mem0_network
 
 volumes:
-  neo4j_data:
   postgres_db:
+  neo4j_data:
 
 networks:
   mem0_network:
