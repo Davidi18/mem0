@@ -1,31 +1,22 @@
-name: mem0-dev
+version: '3.8'
 
 services:
   mem0:
     image: mem0/mem0-api-server:latest
     environment:
-      - OPENAI_API_KEY        
+      - OPENAI_API_KEY
     ports:
-      - "8888:8000"                      
+      - "8888:8000"
     volumes:
-      - ./history:/app/history       
+      - ./history:/app/history
     networks:
       - mem0_network
-    depends_on:
-      postgres:
-        condition: service_healthy
-      neo4j:
-        condition: service_healthy
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mem0.rule=Host(`mem0.strudel.marketing`)"
       - "traefik.http.routers.mem0.entrypoints=websecure"
       - "traefik.http.routers.mem0.tls.certresolver=letsencrypt"
       - "traefik.http.services.mem0.loadbalancer.server.port=8000"
-
-networks:
-  mem0_network:
     driver: bridge
   postgres:
       image: ankane/pgvector:v0.5.1
