@@ -6,7 +6,7 @@ services:
     environment:
       - OPENAI_API_KEY
     ports:
-      - "8888:8000"
+      - "8888:8888"
     volumes:
       - ./history:/app/history
     networks:
@@ -16,7 +16,9 @@ services:
       - "traefik.http.routers.mem0.rule=Host(`mem0.strudel.marketing`)"
       - "traefik.http.routers.mem0.entrypoints=websecure"
       - "traefik.http.routers.mem0.tls.certresolver=letsencrypt"
-      - "traefik.http.services.mem0.loadbalancer.server.port=8000"
+      - "traefik.http.services.mem0.loadbalancer.server.port=8888"
+networks:
+  mem0_network:
     driver: bridge
   postgres:
       image: ankane/pgvector:v0.5.1
