@@ -2,35 +2,31 @@ name: mem0-dev
 
 services:
   mem0:
-    build:
-      context: .  # Set context to parent directory
-      dockerfile: server/dev.Dockerfile
-    ports:
-      - "8888:8000"
+    image: mem0/mem0-api-server:latest
     env_file:
-      - .env
+      - .env                        
+    ports:
+      - "8888:8000"                      
+    volumes:
+      - ./history:/app/history       
     networks:
       - mem0_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mem0.rule=Host(`mem0.strudel.marketing`)"
       - "traefik.http.routers.mem0.entrypoints=websecure"
       - "traefik.http.routers.mem0.tls.certresolver=letsencrypt"
       - "traefik.http.services.mem0.loadbalancer.server.port=8000"
-    volumes:
-      - ./history:/app/history      # History db location. By default, it creates a history.db file on the server folder
-      - .:/app                      # Server code. This allows to reload the app when the server code is updated
-      - ../mem0:/app/packages/mem0  # Mem0 library. This allows to reload the app when the library code is updated
-    depends_on:
-      postgres:
-        condition: service_healthy
-      neo4j:
-        condition: service_healthy
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  # Enable auto-reload
-    environment:
-      - PYTHONDONTWRITEBYTECODE=1  # Prevents Python from writing .pyc files
-      - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal
 
+networks:
+  mem0_network:
+    driver: bridge
   postgres:
       image: ankane/pgvector:v0.5.1
       restart: on-failure
