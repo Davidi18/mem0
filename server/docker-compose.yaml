@@ -3,7 +3,7 @@ name: mem0-dev
 services:
   mem0:
     build:
-      context: ..  # Set context to parent directory
+      context: .  # Set context to parent directory
       dockerfile: server/dev.Dockerfile
     ports:
       - "8888:8000"
